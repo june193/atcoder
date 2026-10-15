@@ -35,7 +35,7 @@ out = [-1]*(N+1)
 for i,v in enumerate(path):
     inin[v] = min(inin[v],i)
     out[v] = max(out[v],i)
-
+```
 ## 2次元リストG1を縦にスライド、横にスライドを繰り返してG2と一致させることができるかを判定する
 ```python
 def compare_2D_grid(G1,G2,H,W):
@@ -68,8 +68,8 @@ if ans == False:
 else:
     print("Yes")
     print(ans)
-
-##2次元配列から図形部分だけを切り出す
+```
+## 2次元配列から図形部分だけを切り出す
 ```python
 import copy
 def kiri(x):
@@ -97,5 +97,5 @@ def kiri(x):
         tmpkiri.append(x[iii][lt:rt+1])
 
     return copy.deepcopy(tmpkiri)
-
+```
 
