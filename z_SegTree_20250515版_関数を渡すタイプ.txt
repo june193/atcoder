@@ -1,0 +1,103 @@
+class SegTree:
+    def __init__(self,function,initial_value,arraysize):
+        self.op = function
+        self.datasize = 1
+        while self.datasize <= arraysize:
+            self.datasize *= 2
+        self.data = [initial_value] * (self.datasize*2)
+
+    def set(self,nth,value):
+        self.idx = self.datasize + nth
+
+#===============================================================================
+#       値をsetするときに、値をvalueに新しく更新するか、値にvalueを加算するか、などはここで
+#       調整すること。
+
+        self.data[self.idx] = self.op(self.data[self.idx], value)
+#        self.data[self.idx] = value
+#===============================================================================
+
+        while self.idx > 1:
+            if self.idx % 2 == 0:
+                self.data[self.idx//2] = self.op(self.data[self.idx],self.data[self.idx+1])
+            else:
+                self.data[self.idx//2] = self.op(self.data[self.idx],self.data[self.idx-1])
+            self.idx //= 2
+        return None
+
+    def prod(self,l,r):
+        if l > r:
+            raise ValueError("l=",l,"r=",r,"l>rの値が指定されており範囲指定が不正です。arrayサイズが1のセグメント木を構築していませんか")
+        self.left = l + self.datasize
+        self.right = r + self.datasize
+
+        if self.left == self.right:
+            return self.data[self.left]
+
+        self.winleft = self.data[self.left]
+        self.winright = self.data[self.right]
+
+        while self.left//2 != self.right//2:
+            if self.left%2 == 0:
+                if self.left+1 <= self.right:
+                    self.winleft = self.op(self.winleft,self.data[self.left+1])
+            self.left //= 2
+
+            if self.right % 2 == 1:
+                if self.right - 1 >= self.left:
+                    self.winright = self.op(self.winright,self.data[self.right-1])
+            self.right //= 2
+
+        return self.op(self.winleft,self.winright)
+
+#=====初期化で渡す関数========
+
+def segmax(seg_a,seg_b):
+    return max(seg_a,seg_b)
+
+def segmin(seg_a,seg_b):
+    return min(seg_a,seg_b)
+
+def segsum(seg_a,seg_b):
+    return seg_a + seg_b
+
+#===========================
+
+N,Q = map(int,input().split())
+A = list(map(int,input().split()))
+
+#=======使い方=======================================================
+# (1)初期化
+#   第1引数で使いたい関数、第2引数で初期値、第3引数で配列のサイズを渡す
+#   st = SegTree(segmax,0,len(A))
+#
+# (2)値の更新
+#   st.set(a,b)
+#   配列のa番目の値をbに更新する。
+#   配列のa番目にbを加算したい等の場合は、12行目のsetのところを適宜書き換える。
+#   初期化時に配列を渡してセグメント木を一気に構築する機能はないので、
+#   forループで配列の要素を1つ1つセットすること。
+#   配列の先頭は0になります。(0-indexed)
+#
+# (3)区間の取得
+#   st.prod(a,b)
+#   区間a～bの値を返す
+#   閉区間。半開区間じゃないので注意。
+#===================================================================
+
+#st = SegTree(segmax,0,len(A))
+#st = SegTree(segmin,float("inf"),len(A))
+#st = SegTree(segsum,0,len(A))
+
+st = SegTree(segsum,0,N)
+
+#for i,v in enumerate(A):
+#    st.set(i,v)
+
+for i in range(Q):
+    a,b,c = map(int,input().split())
+    if a == 0:
+        st.set(b,c)
+    else:
+        print(st.prod(b,c))
+
